@@ -1,0 +1,20 @@
+## Install Docker and start the Docker service
+---
+
+- hosts : docker_servers
+  become: true
+  tasks:
+    - name: Installing docker
+      yum:
+        name: docker-ce*
+        state: present
+
+    - name: Starting the service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+
+##Mistakes:
+    
