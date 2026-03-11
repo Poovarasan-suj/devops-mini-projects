@@ -1,0 +1,39 @@
+
+## Ansible playbook to install Docker, pull the httpd image, and run a container on specified hosts.
+
+---
+
+- hosts : docker_servers
+  become: true
+  tasks:
+    - name: Installing docker
+      yum:
+        name: docker-ce*
+        state: present
+
+    - name: Starting the service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+    - name: Ensure Python Docker SDK is installed
+      pip:
+          name:
+          - docker
+          - requests==2.28.1  # Pinning requests often resolves the scheme error
+          state: present
+
+    - name: Pulling httpd image
+      docker_image:
+          name: httpd
+          source: pull
+          tag:  latest
+
+    - name: Run the container
+      docker_container:
+          name: myweb
+          image: httpd:latest
+          state: started
+          restart_policy: always
+          ports:
+            - "9000:80"
